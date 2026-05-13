@@ -64,6 +64,7 @@ Customers ──< Orders >── Employees
 | `sp_CreateOrder` | Creates an order, returns new OrderID |
 | `sp_AddOrderItem` | Validates stock, inserts order detail |
 | `sp_UpdateOrderStatus` | Updates order status |
+| `sp_DeleteOrder` | Safe order deletion |
 | `sp_MonthlySalesReport` | Returns orders for given year/month |
 | `sp_RestockProduct` | Increases product stock |
 
@@ -77,6 +78,7 @@ Customers ──< Orders >── Employees
 ### Triggers
 | Trigger | Event |
 |---------|-------|
+| `trg_BeforeOrderDetailUpdate` | Validate stock before quantity increase |
 | `trg_AfterOrderDetailInsert` | Decreases stock on new order item |
 | `trg_AfterOrderDetailDelete` | Restores stock on item deletion |
 | `trg_AfterOrderDetailUpdate` | Adjusts stock on quantity change |
@@ -130,10 +132,9 @@ Four user accounts are created with least-privilege access:
 
 | User | Role | Permissions |
 |------|------|-------------|
-| `sales_rep` | Sales representative | SELECT/INSERT/UPDATE on Orders, OrderDetails; SELECT on Customers, Products |
-| `inventory` | Inventory clerk | SELECT/INSERT/UPDATE on Products |
-| `report_viewer` | Read-only analyst | SELECT on all tables |
-| `app_user` | Application service | Full DML + EXECUTE on all objects |
+| `sales_rep` | Sales representative | DML on Orders, OrderDetails; SELECT on Customers, Products; EXECUTE sales-related SPs & fn_OrderTotal |
+| `inventory` | Inventory clerk | DML on Products; SELECT vw_LowStock; EXECUTE sp_RestockProduct |
+| `app_user` | Application service | Full DML on all tables (no DELETE on Orders); EXECUTE all SPs/UDFs; SELECT all views |
 
 ---
 
