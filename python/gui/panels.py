@@ -598,7 +598,7 @@ class OrdersPanel(BasePanel):
                 f"Original total:  {fmt_vnd(total)}\n"
                 f"Discount ({pct}%):  -{fmt_vnd(saving)}\n"
                 f"Final amount:      {fmt_vnd(discounted)}\n\n"
-                "⚠ This is a preview — not saved to the database.",
+                "⚠ This is a preview.",
             )
         except (InvalidOperation, Exception) as e:
             messagebox.showerror("Error", str(e))
@@ -739,7 +739,7 @@ class ReportsPanel(BasePanel):
         self._build_daily_tab()
         self._build_monthly_tab()
         self._build_top_customers_tab()
-        self._build_product_perf_tab()          # ← was missing, now added
+        self._build_product_perf_tab()          
 
     # ── Dashboard ─────────────────────────────────────────────────────────────
 
@@ -842,7 +842,11 @@ class ReportsPanel(BasePanel):
                 trend_revenue = [float(r.get("DailyRevenue") or 0) for r in trend_rows]
 
                 # Top products
-                top_prods  = perf_rows[:6]
+                top_prods  = sorted(
+                    perf_rows,
+                    key=lambda r: int(r.get("TotalSold") or 0),
+                    reverse=True,
+                )[:6]
                 prod_names = [str(r.get("ProductName", ""))[:22] for r in top_prods]
                 prod_sold  = [int(r.get("TotalSold") or 0) for r in top_prods]
 
@@ -879,7 +883,7 @@ class ReportsPanel(BasePanel):
                         spine.set_edgecolor("#45475a")
 
                 # Chart 1: Revenue trend
-                style_ax(ax1, "📈 Revenue Trend (Recent Days)")
+                style_ax(ax1, "Revenue Trend (Recent Days)")
                 if trend_revenue:
                     ax1.plot(trend_dates, trend_revenue, color=ACCENT,
                              linewidth=2, marker="o", markersize=5)
@@ -893,7 +897,7 @@ class ReportsPanel(BasePanel):
                              color="#a6adc8", transform=ax1.transAxes)
 
                 # Chart 2: Status pie
-                style_ax(ax2, "🥧 Order Status")
+                style_ax(ax2, "Order Status")
                 if status_counts:
                     sc = {"Pending":"#fab387","Processing":"#89b4fa","Shipped":"#89dceb",
                           "Delivered":"#a6e3a1","Cancelled":"#f38ba8"}
@@ -910,7 +914,7 @@ class ReportsPanel(BasePanel):
                         at.set_color("#1e1e2e"); at.set_fontsize(7)
 
                 # Chart 3: Top products bar
-                style_ax(ax3, "📦 Top Products by Units Sold")
+                style_ax(ax3, "Top Products by Units Sold")
                 if prod_names:
                     bars = ax3.barh(prod_names[::-1], prod_sold[::-1],
                                     color=COLORS[:len(prod_names)], height=0.6)
@@ -924,7 +928,7 @@ class ReportsPanel(BasePanel):
                                      str(val), va="center", color="#cdd6f4", fontsize=7.5)
 
                 # Chart 4: Top customers
-                style_ax(ax4, "🏆 Top Customers")
+                style_ax(ax4, "Top Customers")
                 if cust_names:
                     ax4.barh(cust_names[::-1], cust_spend[::-1], color="#cba6f7", height=0.6)
                     ax4.xaxis.set_major_formatter(

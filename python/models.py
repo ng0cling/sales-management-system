@@ -183,7 +183,7 @@ class ProductRepository:
         """Lấy hiệu suất bán hàng từ view vw_ProductPerformance."""
         with db_cursor() as (_, cur):
             cur.execute(
-                "SELECT * FROM vw_ProductPerformance ORDER BY TotalRevenue DESC"
+                "SELECT * FROM vw_ProductPerformance ORDER BY TotalSold DESC"
             )
             return cur.fetchall()  # type: ignore[return-value]
 
