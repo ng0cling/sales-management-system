@@ -3,6 +3,7 @@
 ## Overview
 A full-stack Sales Management System built with **MySQL** and **Python**, featuring a modern Tkinter GUI. This project demonstrates advanced database design with stored procedures, triggers, views, and user-defined functions, along with a complete Python application for CRUD operations and reporting.
 
+Video presentation on Youtube: https://youtu.be/A18wfteihqI
 ---
 
 ## Project Structure
